@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">ParkingCalc</string>
+
+    <string-array name="vehicle_types">
+        <item>MotorCycle</item>
+        <item>SmallCar</item>
+        <item>MediumCar</item>
+        <item>LargeCar</item>
+    </string-array>
+</resources>
