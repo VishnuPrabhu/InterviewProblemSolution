@@ -17,7 +17,6 @@ class ExitAndFareCalculatorViewModel: ViewModel() {
         val parkingAlgorithm = ParkingAlgorithm.instance()
         val fare = parkingAlgorithm.departVehicle(vehicleNumber)
         departingVehicle.value = fare
-        // Remove From Database ***
         return fare
     }
 }

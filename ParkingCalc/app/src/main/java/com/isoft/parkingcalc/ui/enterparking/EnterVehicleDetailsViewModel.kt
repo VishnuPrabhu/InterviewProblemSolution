@@ -11,8 +11,8 @@ class EnterVehicleDetailsViewModel : ViewModel() {
 
 
     // Create a LiveData for VehicleNumber
-    val newVehicleForParking: MutableLiveData<Int> by lazy {
-        MutableLiveData<Int>()
+    val newVehicleForParking: MutableLiveData<String> by lazy {
+        MutableLiveData<String>()
     }
 
 
@@ -30,27 +30,28 @@ class EnterVehicleDetailsViewModel : ViewModel() {
             vehicle.allotedSpaceForParking = ParkingAlgorithm.DefaultSpaceRequiredForParking
 
 
+            var parkingSpace = ""
             when(vehicleType) {
                 VehicleType.MotorCycle.ordinal -> {
                     vehicle.vehicleType = VehicleType.MotorCycle
-                    parkingAlgorithm.parkMotorCycle(vehicle)
+                    parkingSpace = parkingAlgorithm.parkMotorCycle(vehicle)
                 }
                 VehicleType.SmallCar.ordinal -> {
                     vehicle.vehicleType = VehicleType.SmallCar
-                    parkingAlgorithm.parkSmallCar(vehicle)
+                    parkingSpace = parkingAlgorithm.parkSmallCar(vehicle)
                 }
                 VehicleType.MediumCar.ordinal -> {
                     vehicle.vehicleType = VehicleType.MediumCar
-                    parkingAlgorithm.parkMediumCar(vehicle)
+                    parkingSpace = parkingAlgorithm.parkMediumCar(vehicle)
                 }
                 VehicleType.LargeCar.ordinal -> {
                     vehicle.vehicleType = VehicleType.LargeCar
-                    parkingAlgorithm.parkLargeCar(vehicle)
+                    parkingSpace = parkingAlgorithm.parkLargeCar(vehicle)
                 }
                 else -> vehicle.vehicleType = VehicleType.MotorCycle
             }
 
-            newVehicleForParking.value = vehicleNo
+            newVehicleForParking.value = parkingSpace
         }
         catch (e: Exception) {
             throw e

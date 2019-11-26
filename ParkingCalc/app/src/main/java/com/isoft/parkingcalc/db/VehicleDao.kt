@@ -6,7 +6,7 @@ import com.isoft.parkingcalc.models.VehicleType
 @Dao
 interface VehicleDao {
 
-    @Query("SELECT * FROM Vehicle where vehicle_type = :vehicleType")
+    @Query("SELECT * FROM Vehicle where vehicle_type = :parkingType")
     fun getParkedVehicles(vehicleType: VehicleType): List<Vehicle>
 
     @Query("SELECT * FROM Vehicle WHERE vehicleNumber = :number")

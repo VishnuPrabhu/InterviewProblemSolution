@@ -46,12 +46,16 @@ enum class VehicleType {
             val totalFareWithDiscount = fareWithoutDiscount + fareWithDiscount
             return  totalFareWithDiscount
         }
-        else
+        else if (noOfHours > 1)
         {
             val fareFor1stHour = 1 * parkingFareFor1stHour
             val fareForRemainingHour = (noOfHours - 1) * parkingFareAfter1stHour
             val totalFare = fareFor1stHour + fareForRemainingHour
             return totalFare.toDouble()
+        }
+        else {
+            val fareFor1stHour = 1 * parkingFareFor1stHour
+            return fareFor1stHour.toDouble()
         }
     }
 

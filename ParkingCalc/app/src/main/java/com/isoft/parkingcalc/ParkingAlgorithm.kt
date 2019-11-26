@@ -10,36 +10,37 @@ class ParkingAlgorithm {
 
     companion object {
         const val DefaultSpaceRequiredForParking = 1.toDouble()
+        const val DefaultSpaceRequiredForMotorCycleInMediumParking = 0.9
         const val SpaceRequiredForMotorCycleInSmallCarParkingSpot = 0.5
-        const val SpaceRequiredForMotorCycleInMediumCarParking = 0.3
+        const val SpaceRequiredForMotorCycleInMediumCarParking = 0.3333
         const val SpaceRequiredForMotorCycleInLargeCarParkingSpot = 0.25
 
 
         fun instance() = ParkingAlgorithm()
     }
 
-    val motorCycleParkingSpots = mutableListOf<Int>()
+    private val motorCycleParkingSpots = mutableListOf<Int>()
 
     init {
-        motorCycleParkingSpots.addAll(1..10)
+        motorCycleParkingSpots.addAll(1..2)
     }
 
-    val smallCarParkingSpots = mutableListOf<Int>()
+    private val smallCarParkingSpots = mutableListOf<Int>()
 
     init {
-        smallCarParkingSpots.addAll(1..10)
+        smallCarParkingSpots.addAll(1..2)
     }
 
-    val mediumCarParkingSpots = mutableListOf<Int>()
+    private val mediumCarParkingSpots = mutableListOf<Int>()
 
     init {
-        mediumCarParkingSpots.addAll(1..10)
+        mediumCarParkingSpots.addAll(1..2)
     }
 
-    val largeCarParkingSpots = mutableListOf<Int>()
+    private val largeCarParkingSpots = mutableListOf<Int>()
 
     init {
-        largeCarParkingSpots.addAll(1..10)
+        largeCarParkingSpots.addAll(1..2)
     }
 
     @Throws(
@@ -47,15 +48,17 @@ class ParkingAlgorithm {
         VehicleAlreadyParkedException::class,
         Exception::class
     )
-    public fun parkMotorCycle(vehicle: Vehicle) {
-        val result = ParkingApplication.db.vehicleDao().getParkedVehicles(VehicleType.MotorCycle)
-        val occupiedMotorCycleSpots = result.map { a -> a.vehicleNumber }
+    fun parkMotorCycle(vehicle: Vehicle): String {
 
-        if (occupiedMotorCycleSpots.contains(vehicle.vehicleNumber)) {
+        val error = verifyIfVehicleAlreadyParkedInside(vehicle.vehicleNumber)
+        if (error) {
             throw VehicleAlreadyParkedException()
         }
 
-        val hasFreeSpots = (motorCycleParkingSpots.count() - occupiedMotorCycleSpots.count() >= 1);
+        val result = ParkingApplication.db.vehicleDao().getParkedVehicles(VehicleType.MotorCycle)
+        val occupiedMotorCycleSpots = result.map { a -> a.assignedParkingSpaceNumber }
+
+        val hasFreeSpots = (motorCycleParkingSpots.count() - occupiedMotorCycleSpots.count() >= 1)
 
         if (hasFreeSpots) {
             vehicle.allotedSpaceForParking = DefaultSpaceRequiredForParking
@@ -63,10 +66,21 @@ class ParkingAlgorithm {
                 motorCycleParkingSpots.filter { spot -> !occupiedMotorCycleSpots.contains(spot) }
                     .sorted().first()
             vehicle.assignedParkingSpaceNumber = nextFreeSpot
+
+            // ** before adding to database change the vehicle type to Large Car, as it is in carparking
+            // 1 motorcycle = 0.25 large car
+            vehicle.parkingType = VehicleType.MotorCycle
+
             ParkingApplication.db.vehicleDao().addVehicle(vehicle)
+
+            return "Park your vehicle at ${VehicleType.MotorCycle.name} parking space no: ${vehicle.assignedParkingSpaceNumber}"
         } else {
-            parkSmallCar(vehicle)
+            return parkSmallCar(vehicle)
         }
+    }
+
+    private fun verifyIfVehicleAlreadyParkedInside(vehicleNumber: Int): Boolean {
+        return ParkingApplication.db.vehicleDao().getParkedVehicleWithNumber(vehicleNumber) != null
     }
 
     @Throws(
@@ -74,41 +88,47 @@ class ParkingAlgorithm {
         VehicleAlreadyParkedException::class,
         Exception::class
     )
-    public fun parkSmallCar(vehicle: Vehicle) {
-        val occupiedSmallCarSpots =
-            ParkingApplication.db.vehicleDao().getParkedVehicles(VehicleType.SmallCar)
-        val occupiedSmallCarVehicleNumbers = occupiedSmallCarSpots.map { a -> a.vehicleNumber }
+    fun parkSmallCar(vehicle: Vehicle): String {
 
-        if (occupiedSmallCarVehicleNumbers.contains(vehicle.vehicleNumber)) {
+        val error = verifyIfVehicleAlreadyParkedInside(vehicle.vehicleNumber)
+        if (error) {
             throw VehicleAlreadyParkedException()
         }
 
+        val occupiedSmallCarSpots =
+            ParkingApplication.db.vehicleDao().getParkedVehicles(VehicleType.SmallCar)
+
         val hasFreeSpots: Boolean
 
-        if (vehicle.vehicleType == VehicleType.MotorCycle) {
+        if (vehicle.parkingType == VehicleType.MotorCycle) {
             hasFreeSpots =
-                (smallCarParkingSpots.count() - occupiedSmallCarSpots.map { a -> roundTo2Decimals(a.allotedSpaceForParking) }.sum()) >= SpaceRequiredForMotorCycleInSmallCarParkingSpot;
+                (smallCarParkingSpots.count() - occupiedSmallCarSpots.map { a -> roundTo2Decimals(a.allotedSpaceForParking) }.sum()) >= SpaceRequiredForMotorCycleInSmallCarParkingSpot
         } else {
             hasFreeSpots =
-                (smallCarParkingSpots.sum() - occupiedSmallCarSpots.map { a -> roundTo2Decimals(a.allotedSpaceForParking) }.sum()) >= DefaultSpaceRequiredForParking;
+                (smallCarParkingSpots.count() - occupiedSmallCarSpots.map { a -> roundTo2Decimals(a.allotedSpaceForParking) }.sum()) >= DefaultSpaceRequiredForParking
         }
 
         if (hasFreeSpots) {
             // Check if you have any remaining available space in Small Car Spaces which has a bike sparked in it. allocated space range is 0.5
-            if (vehicle.vehicleType == VehicleType.MotorCycle) {
+            if (vehicle.parkingType == VehicleType.MotorCycle) {
                 vehicle.allotedSpaceForParking = SpaceRequiredForMotorCycleInSmallCarParkingSpot
 
-                // All occupied spots will have allotedSpaceForParking > 0
-                val nextPartialOccupiedSpaceOfMotorCycleInSmallCarParking =
-                    occupiedSmallCarSpots.filter { spot -> roundTo2Decimals(spot.allotedSpaceForParking) < DefaultSpaceRequiredForParking }
-                // you have a space with bike parking -> use that space
-                if (nextPartialOccupiedSpaceOfMotorCycleInSmallCarParking.count() > 0) {
-                    val nextFreeSpot =
-                        nextPartialOccupiedSpaceOfMotorCycleInSmallCarParking.sortedBy { a -> a.assignedParkingSpaceNumber }
-                            .first()
-                    vehicle.assignedParkingSpaceNumber = nextFreeSpot.assignedParkingSpaceNumber
+                var nextPartialOccupiedSpaceOfMotorCycleInSmallCarParking = 0
+                val occupiedSpaces = occupiedSmallCarSpots.map { a ->  Parking(a.assignedParkingSpaceNumber, a.allotedSpaceForParking) }.sortedBy { a -> a.number }.groupBy { a -> a.number }
+                for(index in occupiedSpaces.keys.indices) {
+                    val parkingNumber = occupiedSpaces.keys.toList()[index]
+                    val spaceOccupied = occupiedSpaces.values.toList()[index].sumByDouble { b -> b.space }
+
+                    if (spaceOccupied < DefaultSpaceRequiredForParking) {
+                        nextPartialOccupiedSpaceOfMotorCycleInSmallCarParking = parkingNumber
+                        break
+                    }
                 }
-                // you dont have any space available, park in a instance space ans assign 0.5 for space occupied
+
+                if (nextPartialOccupiedSpaceOfMotorCycleInSmallCarParking != 0)
+                {
+                    vehicle.assignedParkingSpaceNumber = nextPartialOccupiedSpaceOfMotorCycleInSmallCarParking
+                }
                 else {
                     val nextFreeSpot = smallCarParkingSpots.filter { spot ->
                         !occupiedSmallCarSpots.map { a -> a.assignedParkingSpaceNumber }.contains(
@@ -117,10 +137,25 @@ class ParkingAlgorithm {
                     }.sorted().first()
                     vehicle.assignedParkingSpaceNumber = nextFreeSpot
                 }
+            // park your small car in a Small Car available parking space.
+            } else {
+                val nextFreeSpot = smallCarParkingSpots.filter { spot ->
+                    !occupiedSmallCarSpots.map { a -> a.assignedParkingSpaceNumber }.contains(
+                        spot
+                    )
+                }.sorted().first()
+                vehicle.assignedParkingSpaceNumber = nextFreeSpot
             }
+
+            // ** before adding to database change the vehicle type to Snakk Car, as it is in carparking
+            // 1 motorcycle = 0.5 small car
+            vehicle.parkingType = VehicleType.SmallCar
+
             ParkingApplication.db.vehicleDao().addVehicle(vehicle)
+
+            return "Park your vehicle at ${VehicleType.SmallCar.name} parking space no: ${vehicle.assignedParkingSpaceNumber}"
         } else {
-            parkMediumCar(vehicle)
+            return parkMediumCar(vehicle)
         }
     }
 
@@ -129,55 +164,75 @@ class ParkingAlgorithm {
         VehicleAlreadyParkedException::class,
         Exception::class
     )
-    public fun parkMediumCar(vehicle: Vehicle) {
-        val occupiedMediumCarSpots =
-            ParkingApplication.db.vehicleDao().getParkedVehicles(VehicleType.SmallCar)
-        val occupiedMediumCarVehicleNumbers = occupiedMediumCarSpots.map { a -> a.vehicleNumber }
-
-        if (occupiedMediumCarVehicleNumbers.contains(vehicle.vehicleNumber)) {
+    fun parkMediumCar(vehicle: Vehicle): String {
+        val error = verifyIfVehicleAlreadyParkedInside(vehicle.vehicleNumber)
+        if (error) {
             throw VehicleAlreadyParkedException()
         }
 
+        val occupiedMediumCarSpots =
+            ParkingApplication.db.vehicleDao().getParkedVehicles(VehicleType.MediumCar)
+
         val hasFreeSpots: Boolean
 
-        if (vehicle.vehicleType == VehicleType.MotorCycle) {
+        if (vehicle.parkingType == VehicleType.MotorCycle) {
             hasFreeSpots = (mediumCarParkingSpots.count() - occupiedMediumCarSpots.map { a ->
                 roundTo2Decimals(a.allotedSpaceForParking)
-            }.sum()) >= SpaceRequiredForMotorCycleInMediumCarParking;
+            }.sum()) >= SpaceRequiredForMotorCycleInMediumCarParking
         } else {
             hasFreeSpots = (mediumCarParkingSpots.count() - occupiedMediumCarSpots.map { a ->
                 roundTo2Decimals(a.allotedSpaceForParking)
-            }.sum()) >= DefaultSpaceRequiredForParking;
+            }.sum()) >= DefaultSpaceRequiredForParking
         }
 
         if (hasFreeSpots) {
             // Check if you have any remaining available space in Medium Car Spaces which has a bike sparked in it. allocated space range is 0.3, 0.6
-            if (vehicle.vehicleType == VehicleType.MotorCycle) {
+            if (vehicle.parkingType == VehicleType.MotorCycle) {
                 vehicle.allotedSpaceForParking = SpaceRequiredForMotorCycleInMediumCarParking
 
-                // All occupied spots will have allotedSpaceForParking > 0
-                val nextPartialOccupiedSpaceOfMotorCycleInMediumCarParking =
-                    occupiedMediumCarSpots.filter { spot -> roundTo2Decimals(spot.allotedSpaceForParking) < DefaultSpaceRequiredForParking }
-                // you have a space with bike parking -> use that space
-                if (nextPartialOccupiedSpaceOfMotorCycleInMediumCarParking.count() > 0) {
-                    val nextFreeSpot =
-                        nextPartialOccupiedSpaceOfMotorCycleInMediumCarParking.sortedBy { a -> a.assignedParkingSpaceNumber }
-                            .first()
-                    vehicle.assignedParkingSpaceNumber = nextFreeSpot.assignedParkingSpaceNumber
+                var nextPartialOccupiedSpaceOfMotorCycleInMediumCarParking = 0
+                val occupiedSpaces = occupiedMediumCarSpots.map { a ->  Parking(a.assignedParkingSpaceNumber, a.allotedSpaceForParking) }.sortedBy { a -> a.number }.groupBy { a -> a.number }
+                for(index in occupiedSpaces.keys.indices) {
+                    val parkingNumber = occupiedSpaces.keys.toList()[index]
+                    val spaceOccupied = occupiedSpaces.values.toList()[index].sumByDouble { b -> b.space }
+
+                    if (spaceOccupied < DefaultSpaceRequiredForMotorCycleInMediumParking) {
+                        nextPartialOccupiedSpaceOfMotorCycleInMediumCarParking = parkingNumber
+                        break
+                    }
                 }
-                // you dont have any space available, park in a instance space ans assign 0.5 for space occupied
+
+                if (nextPartialOccupiedSpaceOfMotorCycleInMediumCarParking != 0)
+                {
+                    vehicle.assignedParkingSpaceNumber = nextPartialOccupiedSpaceOfMotorCycleInMediumCarParking
+                }
                 else {
-                    val nextFreeSpot = mediumCarParkingSpots.filter { spot ->
+                    val nextFreeSpot = smallCarParkingSpots.filter { spot ->
                         !occupiedMediumCarSpots.map { a -> a.assignedParkingSpaceNumber }.contains(
                             spot
                         )
                     }.sorted().first()
                     vehicle.assignedParkingSpaceNumber = nextFreeSpot
                 }
+            // Park your medium car in a Medium Car available parking space
+            } else {
+                val nextFreeSpot = mediumCarParkingSpots.filter { spot ->
+                    !occupiedMediumCarSpots.map { a -> a.assignedParkingSpaceNumber }.contains(
+                        spot
+                    )
+                }.sorted().first()
+                vehicle.assignedParkingSpaceNumber = nextFreeSpot
             }
+
+            // ** before adding to database change the vehicle type to Medium Car, as it is in carparking
+            // 1 motorcycle = 0.3 Medium car
+            vehicle.parkingType = VehicleType.MediumCar
+
             ParkingApplication.db.vehicleDao().addVehicle(vehicle)
+
+            return "Park your vehicle at ${VehicleType.MediumCar.name} parking space no: ${vehicle.assignedParkingSpaceNumber}"
         } else {
-            parkLargeCar(vehicle)
+            return parkLargeCar(vehicle)
         }
     }
 
@@ -186,58 +241,77 @@ class ParkingAlgorithm {
         VehicleAlreadyParkedException::class,
         Exception::class
     )
-    public fun parkLargeCar(vehicle: Vehicle) {
-        val occupiedLargeCarSpots =
-            ParkingApplication.db.vehicleDao().getParkedVehicles(VehicleType.SmallCar)
-        val occupiedLargeCarVehicleNumbers = occupiedLargeCarSpots.map { a -> a.vehicleNumber }
-
-        if (occupiedLargeCarVehicleNumbers.contains(vehicle.vehicleNumber)) {
+    fun parkLargeCar(vehicle: Vehicle): String {
+        val error = verifyIfVehicleAlreadyParkedInside(vehicle.vehicleNumber)
+        if (error) {
             throw VehicleAlreadyParkedException()
         }
 
+        val occupiedLargeCarSpots =
+            ParkingApplication.db.vehicleDao().getParkedVehicles(VehicleType.LargeCar)
+
         val hasFreeSpots: Boolean
 
-        if (vehicle.vehicleType == VehicleType.MotorCycle) {
+        if (vehicle.parkingType == VehicleType.MotorCycle) {
             hasFreeSpots =
-                (largeCarParkingSpots.count() - occupiedLargeCarSpots.map { a -> roundTo2Decimals(a.allotedSpaceForParking) }.sum()) >= SpaceRequiredForMotorCycleInMediumCarParking;
+                (largeCarParkingSpots.count() - occupiedLargeCarSpots.map { a -> roundTo2Decimals(a.allotedSpaceForParking) }.sum()) >= SpaceRequiredForMotorCycleInLargeCarParkingSpot
         } else {
             hasFreeSpots =
-                (mediumCarParkingSpots.count() - occupiedLargeCarSpots.map { a -> roundTo2Decimals(a.allotedSpaceForParking) }.sum()) >= DefaultSpaceRequiredForParking;
+                (mediumCarParkingSpots.count() - occupiedLargeCarSpots.map { a -> roundTo2Decimals(a.allotedSpaceForParking) }.sum()) >= DefaultSpaceRequiredForParking
         }
 
         if (hasFreeSpots) {
             // Check if you have any remaining available space in Medium Car Spaces which has a bike sparked in it. allocated space range is 0.3, 0.6
-            if (vehicle.vehicleType == VehicleType.MotorCycle) {
+            if (vehicle.parkingType == VehicleType.MotorCycle) {
                 vehicle.allotedSpaceForParking = SpaceRequiredForMotorCycleInLargeCarParkingSpot
 
-                // All occupied spots will have allotedSpaceForParking > 0
-                val nextPartialOccupiedSpaceOfMotorCycleInLargeCarParking =
-                    occupiedLargeCarSpots.filter { spot -> roundTo2Decimals(spot.allotedSpaceForParking) < DefaultSpaceRequiredForParking }
-                // you have a space with bike parking -> use that space
-                if (nextPartialOccupiedSpaceOfMotorCycleInLargeCarParking.count() > 0) {
-                    val nextFreeSpot =
-                        nextPartialOccupiedSpaceOfMotorCycleInLargeCarParking.sortedBy { a -> a.assignedParkingSpaceNumber }
-                            .first()
-                    vehicle.assignedParkingSpaceNumber = nextFreeSpot.assignedParkingSpaceNumber
+                var nextPartialOccupiedSpaceOfMotorCycleInLargeCarParking = 0
+                val occupiedSpaces = occupiedLargeCarSpots.map { a ->  Parking(a.assignedParkingSpaceNumber, a.allotedSpaceForParking) }.sortedBy { a -> a.number }.groupBy { a -> a.number }
+                for(index in occupiedSpaces.keys.indices) {
+                    val parkingNumber = occupiedSpaces.keys.toList()[index]
+                    val spaceOccupied = occupiedSpaces.values.toList()[index].sumByDouble { b -> b.space }
+
+                    if (spaceOccupied < DefaultSpaceRequiredForParking) {
+                        nextPartialOccupiedSpaceOfMotorCycleInLargeCarParking = parkingNumber
+                        break
+                    }
                 }
-                // you dont have any space available, park in a instance space ans assign 0.5 for space occupied
+
+                if (nextPartialOccupiedSpaceOfMotorCycleInLargeCarParking != 0)
+                {
+                    vehicle.assignedParkingSpaceNumber = nextPartialOccupiedSpaceOfMotorCycleInLargeCarParking
+                }
                 else {
-                    val nextFreeSpot = mediumCarParkingSpots.filter { spot ->
+                    val nextFreeSpot = smallCarParkingSpots.filter { spot ->
                         !occupiedLargeCarSpots.map { a -> a.assignedParkingSpaceNumber }.contains(
                             spot
                         )
                     }.sorted().first()
                     vehicle.assignedParkingSpaceNumber = nextFreeSpot
                 }
-                ParkingApplication.db.vehicleDao().addVehicle(vehicle)
+
             } else {
-                throw OutOfParkingLotException()
+                val nextFreeSpot = smallCarParkingSpots.filter { spot ->
+                    !occupiedLargeCarSpots.map { a -> a.assignedParkingSpaceNumber }.contains(
+                        spot
+                    )
+                }.sorted().first()
+                vehicle.assignedParkingSpaceNumber = nextFreeSpot
             }
+            // ** before adding to database change the vehicle type to Large Car, as it is in carparking
+            // 1 motorcycle = 0.25 large car
+            vehicle.parkingType = VehicleType.LargeCar
+
+            ParkingApplication.db.vehicleDao().addVehicle(vehicle)
+
+            return "Park your vehicle at ${VehicleType.LargeCar.name} parking space no: ${vehicle.assignedParkingSpaceNumber}"
+        } else {
+            throw OutOfParkingLotException()
         }
     }
 
     @Throws(VehicleNotAvailableException::class)
-    public fun departVehicle(vehicleNumber: Int): Double {
+    fun departVehicle(vehicleNumber: Int): Double {
         try {
             val departingVehicle =
                 ParkingApplication.db.vehicleDao().getParkedVehicleWithNumber(vehicleNumber)
@@ -252,6 +326,9 @@ class ParkingAlgorithm {
                     TimeUnit.HOURS.convert(timeDifferenceInMilliSeconds, TimeUnit.MILLISECONDS)
 
                 val fare = departingVehicle.vehicleType.calculateParkingFare(noOfParkingHours)
+
+                // Remove From Database ***
+                ParkingApplication.db.vehicleDao().deleteVehicle(departingVehicle)
                 return fare
             }
             else {
@@ -268,5 +345,7 @@ class ParkingAlgorithm {
     private fun roundTo2Decimals(value: Double): Double {
         return String.format("%.2f", value).toDouble()
     }
+
+    data class Parking(val number: Int, val space: Double)
 
 }
