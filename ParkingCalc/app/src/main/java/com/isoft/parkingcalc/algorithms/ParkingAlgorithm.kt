@@ -1,14 +1,17 @@
 package com.isoft.parkingcalc.algorithms
 
 import android.view.Surface
-import com.isoft.parkingcalc.extenstions.OutOfParkingLotException
 import com.isoft.parkingcalc.ParkingApplication
+import com.isoft.parkingcalc.db.Vehicle
+import com.isoft.parkingcalc.db.VehicleDatabase
+import com.isoft.parkingcalc.extenstions.OutOfParkingLotException
 import com.isoft.parkingcalc.extenstions.VehicleAlreadyParkedException
 import com.isoft.parkingcalc.extenstions.VehicleNotAvailableException
-import com.isoft.parkingcalc.db.Vehicle
 import com.isoft.parkingcalc.models.VehicleType
 import java.util.*
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
+
 
 class ParkingAlgorithm {
 
@@ -46,6 +49,9 @@ class ParkingAlgorithm {
     init {
         largeCarParkingSpots.addAll(1..2)
     }
+
+    @Inject
+    var mAppDatabase: VehicleDatabase? = null
 
     @Throws(
         Surface.OutOfResourcesException::class,
