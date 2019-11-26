@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.isoft.parkingcalc.db.Vehicle
 import com.isoft.parkingcalc.models.VehicleType
-import com.isoft.parkingcalc.ParkingAlgorithm
+import com.isoft.parkingcalc.algorithms.ParkingAlgorithm
 import java.util.*
 
 class EnterVehicleDetailsViewModel : ViewModel() {

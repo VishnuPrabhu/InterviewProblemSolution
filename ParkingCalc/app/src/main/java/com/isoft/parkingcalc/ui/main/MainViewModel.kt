@@ -3,10 +3,7 @@ package com.isoft.parkingcalc.ui.main
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.isoft.parkingcalc.ParkingApplication
-import com.isoft.parkingcalc.VehicleNotAvailableException
-import com.isoft.parkingcalc.db.Vehicle
-import com.isoft.parkingcalc.models.VehicleType
-import com.isoft.parkingcalc.ui.occupied.Section
+import com.isoft.parkingcalc.extenstions.VehicleNotAvailableException
 
 class MainViewModel : ViewModel() {
 

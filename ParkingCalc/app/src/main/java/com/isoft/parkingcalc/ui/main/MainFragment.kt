@@ -5,12 +5,11 @@ import android.os.Bundle
 import android.text.TextUtils
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import com.isoft.parkingcalc.R
-import com.isoft.parkingcalc.showAlertDialog
+import com.isoft.parkingcalc.extenstions.showAlertDialog
 import com.isoft.parkingcalc.ui.enterparking.EnterVehicleDetailsFragment
 import com.isoft.parkingcalc.ui.exitparking.ExitAndFareCalculatorFragment
 import com.isoft.parkingcalc.ui.occupied.VehicleParkingListFragment

@@ -1,4 +1,4 @@
-package com.isoft.parkingcalc
+package com.isoft.parkingcalc.extenstions
 
 import androidx.fragment.app.Fragment
 import android.content.DialogInterface

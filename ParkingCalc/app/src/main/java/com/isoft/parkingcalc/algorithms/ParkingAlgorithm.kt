@@ -1,6 +1,10 @@
-package com.isoft.parkingcalc
+package com.isoft.parkingcalc.algorithms
 
 import android.view.Surface
+import com.isoft.parkingcalc.extenstions.OutOfParkingLotException
+import com.isoft.parkingcalc.ParkingApplication
+import com.isoft.parkingcalc.extenstions.VehicleAlreadyParkedException
+import com.isoft.parkingcalc.extenstions.VehicleNotAvailableException
 import com.isoft.parkingcalc.db.Vehicle
 import com.isoft.parkingcalc.models.VehicleType
 import java.util.*
@@ -61,7 +65,8 @@ class ParkingAlgorithm {
         val hasFreeSpots = (motorCycleParkingSpots.count() - occupiedMotorCycleSpots.count() >= 1)
 
         if (hasFreeSpots) {
-            vehicle.allotedSpaceForParking = DefaultSpaceRequiredForParking
+            vehicle.allotedSpaceForParking =
+                DefaultSpaceRequiredForParking
             val nextFreeSpot =
                 motorCycleParkingSpots.filter { spot -> !occupiedMotorCycleSpots.contains(spot) }
                     .sorted().first()
@@ -111,10 +116,16 @@ class ParkingAlgorithm {
         if (hasFreeSpots) {
             // Check if you have any remaining available space in Small Car Spaces which has a bike sparked in it. allocated space range is 0.5
             if (vehicle.vehicleType == VehicleType.MotorCycle) {
-                vehicle.allotedSpaceForParking = SpaceRequiredForMotorCycleInSmallCarParkingSpot
+                vehicle.allotedSpaceForParking =
+                    SpaceRequiredForMotorCycleInSmallCarParkingSpot
 
                 var nextPartialOccupiedSpaceOfMotorCycleInSmallCarParking = 0
-                val occupiedSpaces = occupiedSmallCarSpots.map { a ->  Parking(a.assignedParkingSpaceNumber, a.allotedSpaceForParking) }.sortedBy { a -> a.number }.groupBy { a -> a.number }
+                val occupiedSpaces = occupiedSmallCarSpots.map { a ->
+                    Parking(
+                        a.assignedParkingSpaceNumber,
+                        a.allotedSpaceForParking
+                    )
+                }.sortedBy { a -> a.number }.groupBy { a -> a.number }
                 for(index in occupiedSpaces.keys.indices) {
                     val parkingNumber = occupiedSpaces.keys.toList()[index]
                     val spaceOccupied = occupiedSpaces.values.toList()[index].sumByDouble { b -> b.space }
@@ -188,10 +199,16 @@ class ParkingAlgorithm {
         if (hasFreeSpots) {
             // Check if you have any remaining available space in Medium Car Spaces which has a bike sparked in it. allocated space range is 0.3, 0.6
             if (vehicle.vehicleType == VehicleType.MotorCycle) {
-                vehicle.allotedSpaceForParking = SpaceRequiredForMotorCycleInMediumCarParking
+                vehicle.allotedSpaceForParking =
+                    SpaceRequiredForMotorCycleInMediumCarParking
 
                 var nextPartialOccupiedSpaceOfMotorCycleInMediumCarParking = 0
-                val occupiedSpaces = occupiedMediumCarSpots.map { a ->  Parking(a.assignedParkingSpaceNumber, a.allotedSpaceForParking) }.sortedBy { a -> a.number }.groupBy { a -> a.number }
+                val occupiedSpaces = occupiedMediumCarSpots.map { a ->
+                    Parking(
+                        a.assignedParkingSpaceNumber,
+                        a.allotedSpaceForParking
+                    )
+                }.sortedBy { a -> a.number }.groupBy { a -> a.number }
                 for(index in occupiedSpaces.keys.indices) {
                     val parkingNumber = occupiedSpaces.keys.toList()[index]
                     val spaceOccupied = occupiedSpaces.values.toList()[index].sumByDouble { b -> b.space }
@@ -263,10 +280,16 @@ class ParkingAlgorithm {
         if (hasFreeSpots) {
             // Check if you have any remaining available space in Medium Car Spaces which has a bike sparked in it. allocated space range is 0.3, 0.6
             if (vehicle.vehicleType == VehicleType.MotorCycle) {
-                vehicle.allotedSpaceForParking = SpaceRequiredForMotorCycleInLargeCarParkingSpot
+                vehicle.allotedSpaceForParking =
+                    SpaceRequiredForMotorCycleInLargeCarParkingSpot
 
                 var nextPartialOccupiedSpaceOfMotorCycleInLargeCarParking = 0
-                val occupiedSpaces = occupiedLargeCarSpots.map { a ->  Parking(a.assignedParkingSpaceNumber, a.allotedSpaceForParking) }.sortedBy { a -> a.number }.groupBy { a -> a.number }
+                val occupiedSpaces = occupiedLargeCarSpots.map { a ->
+                    Parking(
+                        a.assignedParkingSpaceNumber,
+                        a.allotedSpaceForParking
+                    )
+                }.sortedBy { a -> a.number }.groupBy { a -> a.number }
                 for(index in occupiedSpaces.keys.indices) {
                     val parkingNumber = occupiedSpaces.keys.toList()[index]
                     val spaceOccupied = occupiedSpaces.values.toList()[index].sumByDouble { b -> b.space }

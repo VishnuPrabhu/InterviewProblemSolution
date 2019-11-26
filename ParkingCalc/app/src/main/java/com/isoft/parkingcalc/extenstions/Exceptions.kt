@@ -1,4 +1,4 @@
-package com.isoft.parkingcalc
+package com.isoft.parkingcalc.extenstions
 
 
 class OutOfParkingLotException: Exception("No available space for parking the vehicle")

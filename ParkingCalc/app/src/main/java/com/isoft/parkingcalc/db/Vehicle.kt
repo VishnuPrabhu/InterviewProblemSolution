@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
-import com.isoft.parkingcalc.ParkingAlgorithm
+import com.isoft.parkingcalc.algorithms.ParkingAlgorithm
 import com.isoft.parkingcalc.models.VehicleType
 import java.util.*
 

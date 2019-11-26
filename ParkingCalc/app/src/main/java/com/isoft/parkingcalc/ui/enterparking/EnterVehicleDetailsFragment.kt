@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.isoft.parkingcalc.R
-import com.isoft.parkingcalc.showAlertDialog
+import com.isoft.parkingcalc.extenstions.showAlertDialog
 import kotlinx.android.synthetic.main.fragment_enter_vehicle_details.*
 
 class EnterVehicleDetailsFragment: Fragment() {
