@@ -27,7 +27,7 @@ enum class VehicleType {
     val parkingFareAfter1stHour: Int
 
     constructor(parkingFareFor1stHour: Int, parkingFareAfter1stHour: Int) {
-        this.parkingFareFor1stHour = parkingFareAfter1stHour
+        this.parkingFareFor1stHour = parkingFareFor1stHour
         this.parkingFareAfter1stHour = parkingFareAfter1stHour
     }
 

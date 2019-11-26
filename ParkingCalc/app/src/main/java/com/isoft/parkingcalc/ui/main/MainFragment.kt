@@ -48,14 +48,14 @@ class MainFragment : Fragment(), View.OnClickListener {
                 fragmentManager!!.beginTransaction()
                     .replace(R.id.container, EnterVehicleDetailsFragment.newInstance())
                     .addToBackStack(null)
-                    .commitNow()
+                    .commit()
             }
             R.id.btn_exit_parking -> {
                 // Open Exiting screen
                 fragmentManager!!.beginTransaction()
                     .replace(R.id.container, ExitAndFareCalculatorFragment.newInstance())
                     .addToBackStack(null)
-                    .commitNow()
+                    .commit()
             }
             R.id.btn_view_parked_slots -> {
                 // Open Parking Slots List screen

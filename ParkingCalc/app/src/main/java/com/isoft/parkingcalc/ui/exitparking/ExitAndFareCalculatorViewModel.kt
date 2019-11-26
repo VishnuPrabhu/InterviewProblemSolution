@@ -4,7 +4,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.isoft.parkingcalc.ParkingAlgorithm
 import com.isoft.parkingcalc.VehicleNotAvailableException
-import com.isoft.parkingcalc.models.Vehicle
 
 class ExitAndFareCalculatorViewModel: ViewModel() {
 

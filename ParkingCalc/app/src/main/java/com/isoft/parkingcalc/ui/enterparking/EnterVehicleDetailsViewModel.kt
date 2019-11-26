@@ -2,7 +2,7 @@ package com.isoft.parkingcalc.ui.enterparking
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.isoft.parkingcalc.models.Vehicle
+import com.isoft.parkingcalc.db.Vehicle
 import com.isoft.parkingcalc.models.VehicleType
 import com.isoft.parkingcalc.ParkingAlgorithm
 import java.util.*

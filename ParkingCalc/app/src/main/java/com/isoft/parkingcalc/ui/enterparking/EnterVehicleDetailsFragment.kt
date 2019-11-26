@@ -8,8 +8,8 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.isoft.parkingcalc.models.Vehicle
 import com.isoft.parkingcalc.R
+import com.isoft.parkingcalc.showAlertDialog
 import kotlinx.android.synthetic.main.fragment_enter_vehicle_details.*
 
 class EnterVehicleDetailsFragment: Fragment() {
@@ -51,7 +51,7 @@ class EnterVehicleDetailsFragment: Fragment() {
             try {
                 viewModel.addVehicle(et_vehicle_reg_no.text.toString().toInt(), spinner_vehicle_type.selectedItemPosition)
             } catch (e: Exception) {
-                // show dialog
+                showAlertDialog(e.message!!)
             }
         }
     }

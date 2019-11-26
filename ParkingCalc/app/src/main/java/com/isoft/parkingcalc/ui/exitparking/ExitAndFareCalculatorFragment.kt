@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.isoft.parkingcalc.R
+import com.isoft.parkingcalc.showAlertDialog
 import kotlinx.android.synthetic.main.fragment_exit_parking_fare_calculator.*
 
 class ExitAndFareCalculatorFragment: Fragment() {
@@ -46,7 +47,7 @@ class ExitAndFareCalculatorFragment: Fragment() {
                 val vehicleNo = et_vehicle_reg_no.text.toString().toInt()
                 val fare = viewModel.calculateFareForParking(vehicleNo)
             } catch (e: Exception) {
-                // show dialog
+                showAlertDialog(e.message!!)
             }
         }
     }

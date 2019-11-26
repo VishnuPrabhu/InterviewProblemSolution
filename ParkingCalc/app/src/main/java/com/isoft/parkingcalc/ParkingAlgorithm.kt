@@ -1,7 +1,7 @@
 package com.isoft.parkingcalc
 
 import android.view.Surface
-import com.isoft.parkingcalc.models.Vehicle
+import com.isoft.parkingcalc.db.Vehicle
 import com.isoft.parkingcalc.models.VehicleType
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -15,54 +15,73 @@ class ParkingAlgorithm {
         const val SpaceRequiredForMotorCycleInLargeCarParkingSpot = 0.25
 
 
-
         fun instance() = ParkingAlgorithm()
     }
 
     val motorCycleParkingSpots = mutableListOf<Int>()
-    init{
+
+    init {
         motorCycleParkingSpots.addAll(1..10)
     }
+
     val smallCarParkingSpots = mutableListOf<Int>()
-    init{
+
+    init {
         smallCarParkingSpots.addAll(1..10)
     }
+
     val mediumCarParkingSpots = mutableListOf<Int>()
-    init{
+
+    init {
         mediumCarParkingSpots.addAll(1..10)
     }
+
     val largeCarParkingSpots = mutableListOf<Int>()
-    init{
+
+    init {
         largeCarParkingSpots.addAll(1..10)
     }
 
-    @Throws(Surface.OutOfResourcesException::class, Exception::class)
+    @Throws(
+        Surface.OutOfResourcesException::class,
+        VehicleAlreadyParkedException::class,
+        Exception::class
+    )
     public fun parkMotorCycle(vehicle: Vehicle) {
-        // database
-        // select motorcycle
-        // returns list of vehicle object
-        // convert to dictionary and then to list of keys
-        val occupiedMotorCycleSpots = listOf<Int>(3)
+        val result = ParkingApplication.db.vehicleDao().getParkedVehicles(VehicleType.MotorCycle)
+        val occupiedMotorCycleSpots = result.map { a -> a.vehicleNumber }
+
+        if (occupiedMotorCycleSpots.contains(vehicle.vehicleNumber)) {
+            throw VehicleAlreadyParkedException()
+        }
 
         val hasFreeSpots = (motorCycleParkingSpots.count() - occupiedMotorCycleSpots.count() >= 1);
 
         if (hasFreeSpots) {
             vehicle.allotedSpaceForParking = DefaultSpaceRequiredForParking
-            val nextFreeSpot = motorCycleParkingSpots.sorted()
-                .filter { spot -> !occupiedMotorCycleSpots.contains(spot) }
-            // add to data base
+            val nextFreeSpot =
+                motorCycleParkingSpots.filter { spot -> !occupiedMotorCycleSpots.contains(spot) }
+                    .sorted().first()
+            vehicle.assignedParkingSpaceNumber = nextFreeSpot
+            ParkingApplication.db.vehicleDao().addVehicle(vehicle)
         } else {
             parkSmallCar(vehicle)
         }
     }
 
-    @Throws(Surface.OutOfResourcesException::class, Exception::class)
+    @Throws(
+        Surface.OutOfResourcesException::class,
+        VehicleAlreadyParkedException::class,
+        Exception::class
+    )
     public fun parkSmallCar(vehicle: Vehicle) {
-        // database
-        // select small car
-        // returns list of vehicle object
-        // convert to dictionary and then to list of keys
-        val occupiedSmallCarSpots = listOf<Vehicle>()
+        val occupiedSmallCarSpots =
+            ParkingApplication.db.vehicleDao().getParkedVehicles(VehicleType.SmallCar)
+        val occupiedSmallCarVehicleNumbers = occupiedSmallCarSpots.map { a -> a.vehicleNumber }
+
+        if (occupiedSmallCarVehicleNumbers.contains(vehicle.vehicleNumber)) {
+            throw VehicleAlreadyParkedException()
+        }
 
         val hasFreeSpots: Boolean
 
@@ -99,19 +118,25 @@ class ParkingAlgorithm {
                     vehicle.assignedParkingSpaceNumber = nextFreeSpot
                 }
             }
-            // add Vehicle to data base
+            ParkingApplication.db.vehicleDao().addVehicle(vehicle)
         } else {
             parkMediumCar(vehicle)
         }
     }
 
-    @Throws(Surface.OutOfResourcesException::class, Exception::class)
+    @Throws(
+        Surface.OutOfResourcesException::class,
+        VehicleAlreadyParkedException::class,
+        Exception::class
+    )
     public fun parkMediumCar(vehicle: Vehicle) {
-        // database
-        // select medium car
-        // returns list of vehicle object
-        // convert to dictionary and then to list of keys
-        val occupiedMediumCarSpots = listOf<Vehicle>()
+        val occupiedMediumCarSpots =
+            ParkingApplication.db.vehicleDao().getParkedVehicles(VehicleType.SmallCar)
+        val occupiedMediumCarVehicleNumbers = occupiedMediumCarSpots.map { a -> a.vehicleNumber }
+
+        if (occupiedMediumCarVehicleNumbers.contains(vehicle.vehicleNumber)) {
+            throw VehicleAlreadyParkedException()
+        }
 
         val hasFreeSpots: Boolean
 
@@ -150,19 +175,25 @@ class ParkingAlgorithm {
                     vehicle.assignedParkingSpaceNumber = nextFreeSpot
                 }
             }
-            // add Vehicle to data base
+            ParkingApplication.db.vehicleDao().addVehicle(vehicle)
         } else {
             parkLargeCar(vehicle)
         }
     }
 
-    @Throws(Surface.OutOfResourcesException::class, Exception::class)
+    @Throws(
+        Surface.OutOfResourcesException::class,
+        VehicleAlreadyParkedException::class,
+        Exception::class
+    )
     public fun parkLargeCar(vehicle: Vehicle) {
-        // database
-        // select Large car
-        // returns list of vehicle object
-        // convert to dictionary and then to list of keys
-        val occupiedLargeCarSpots = listOf<Vehicle>()
+        val occupiedLargeCarSpots =
+            ParkingApplication.db.vehicleDao().getParkedVehicles(VehicleType.SmallCar)
+        val occupiedLargeCarVehicleNumbers = occupiedLargeCarSpots.map { a -> a.vehicleNumber }
+
+        if (occupiedLargeCarVehicleNumbers.contains(vehicle.vehicleNumber)) {
+            throw VehicleAlreadyParkedException()
+        }
 
         val hasFreeSpots: Boolean
 
@@ -198,7 +229,7 @@ class ParkingAlgorithm {
                     }.sorted().first()
                     vehicle.assignedParkingSpaceNumber = nextFreeSpot
                 }
-                // add Vehicle to data base
+                ParkingApplication.db.vehicleDao().addVehicle(vehicle)
             } else {
                 throw OutOfParkingLotException()
             }
@@ -207,28 +238,32 @@ class ParkingAlgorithm {
 
     @Throws(VehicleNotAvailableException::class)
     public fun departVehicle(vehicleNumber: Int): Double {
-        // database
-        // select * from db where vehicle n0 == vno
-        // you get a vehicle
-        // remove from Database
+        try {
+            val departingVehicle =
+                ParkingApplication.db.vehicleDao().getParkedVehicleWithNumber(vehicleNumber)
 
-        if (true) {
+            if (departingVehicle != null) {
 
-            lateinit var departingVehicle: Vehicle
+                val enteredDate = departingVehicle.enterDate
+                val departingDate = Date()
 
-            val enteredDate = departingVehicle.enterDate
-            val departingDate = Date()
+                val timeDifferenceInMilliSeconds = departingDate.time - enteredDate.time
+                val noOfParkingHours =
+                    TimeUnit.HOURS.convert(timeDifferenceInMilliSeconds, TimeUnit.MILLISECONDS)
 
-            val timeDifferenceInMilliSeconds = departingDate.time - enteredDate.time
-            val noOfParkingHours =
-                TimeUnit.HOURS.convert(timeDifferenceInMilliSeconds, TimeUnit.MILLISECONDS)
-
-            val fare = departingVehicle.vehicleType.calculateParkingFare(noOfParkingHours)
-            return fare
-        } else {
-            throw VehicleNotAvailableException()
+                val fare = departingVehicle.vehicleType.calculateParkingFare(noOfParkingHours)
+                return fare
+            }
+            else {
+                print(VehicleNotAvailableException().message)
+                throw VehicleNotAvailableException()
+            }
+        } catch (e: Exception) {
+            print(e.message)
+            throw e
         }
     }
+
 
     private fun roundTo2Decimals(value: Double): Double {
         return String.format("%.2f", value).toDouble()
