@@ -25,8 +25,8 @@
         android:id="@+id/btn_enter_parking"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="60dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="20dp"
         android:text="Enter Parking"
         app:layout_constraintBottom_toTopOf="@+id/guideline"
         app:layout_constraintEnd_toStartOf="@+id/guideline2" />
@@ -35,8 +35,8 @@
         android:id="@+id/btn_exit_parking"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginBottom="60dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="20dp"
         android:text="Exit Parking"
         app:layout_constraintBottom_toTopOf="@+id/guideline"
         app:layout_constraintStart_toStartOf="@+id/guideline2" />
@@ -45,19 +45,34 @@
         android:id="@+id/btn_view_parked_slots"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:layout_marginEnd="30dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="10dp"
         android:text="View Parking Slots"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintTop_toTopOf="@+id/guideline" />
 
     <Button
-        android:id="@+id/btn_parking_statistics"
+        android:id="@+id/btn_find_vehicle_parking"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="60dp"
-        android:text="Parking Statictics"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:text="Get Parking Number"
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
+        app:layout_constraintTop_toBottomOf="@+id/et_enter_vehicle_no" />
+
+    <EditText
+        android:id="@+id/et_enter_vehicle_no"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        android:ems="10"
+        android:hint="enter vehicle reg no"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guideline2"
         app:layout_constraintTop_toTopOf="@+id/guideline" />
 </androidx.constraintlayout.widget.ConstraintLayout>

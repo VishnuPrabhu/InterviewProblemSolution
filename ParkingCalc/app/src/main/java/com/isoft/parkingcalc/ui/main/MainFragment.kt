@@ -6,10 +6,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import com.isoft.parkingcalc.R
+import com.isoft.parkingcalc.showAlertDialog
 import com.isoft.parkingcalc.ui.enterparking.EnterVehicleDetailsFragment
 import com.isoft.parkingcalc.ui.exitparking.ExitAndFareCalculatorFragment
 import kotlinx.android.synthetic.main.main_fragment.*
+import java.lang.Exception
 
 class MainFragment : Fragment(), View.OnClickListener {
 
@@ -30,6 +33,10 @@ class MainFragment : Fragment(), View.OnClickListener {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
+        viewModel.vehicleDetails.observe(this, Observer {
+            print(it)
+            showAlertDialog(it)
+        })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -37,8 +44,8 @@ class MainFragment : Fragment(), View.OnClickListener {
 
         btn_enter_parking.setOnClickListener(this)
         btn_exit_parking.setOnClickListener(this)
-        btn_parking_statistics.setOnClickListener(this)
-        btn_parking_statistics.setOnClickListener(this)
+        btn_find_vehicle_parking.setOnClickListener(this)
+        btn_find_vehicle_parking.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
@@ -60,8 +67,13 @@ class MainFragment : Fragment(), View.OnClickListener {
             R.id.btn_view_parked_slots -> {
                 // Open Parking Slots List screen
             }
-            R.id.btn_parking_statistics -> {
-                // Open Statistics Chart screen
+            R.id.btn_find_vehicle_parking -> {
+                try {
+                    val vehicleNo = et_enter_vehicle_no.text.toString()
+                    viewModel.getVehicleParkingNumber(vehicleNo.toInt())
+                } catch (e: Exception) {
+                    showAlertDialog(e.message!!)
+                }
             }
             else -> {
                 // Nothing to do
