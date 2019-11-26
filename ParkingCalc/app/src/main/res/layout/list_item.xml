@@ -4,17 +4,12 @@
     android:layout_height="wrap_content">
     <TextView
         android:id="@+id/list_item_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-</LinearLayout><!--
-<?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/title"
-    android:layout_width="match_parent"
-    android:layout_height="130dp"
-    android:gravity="center"
-    android:layout_margin="4dp"
-    android:textColor="#999999"
-    android:textStyle="bold"
-    android:textSize="22sp"
-    android:background="#E7DFDF"/>-->
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textSize="15sp"
+        android:textColor="#070706"
+        android:padding="10dp"
+        android:layout_marginLeft="4dp"
+        android:background="#F1E3E3"/>
+</LinearLayout>
+

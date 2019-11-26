@@ -57,21 +57,21 @@ class MainFragment : Fragment(), View.OnClickListener {
             R.id.btn_enter_parking -> {
                 // Open Entering screen
                 fragmentManager!!.beginTransaction()
-                    .replace(R.id.container, EnterVehicleDetailsFragment.newInstance())
+                    .add(R.id.container, EnterVehicleDetailsFragment.newInstance())
                     .addToBackStack(null)
                     .commit()
             }
             R.id.btn_exit_parking -> {
                 // Open Exiting screen
                 fragmentManager!!.beginTransaction()
-                    .replace(R.id.container, ExitAndFareCalculatorFragment.newInstance())
+                    .add(R.id.container, ExitAndFareCalculatorFragment.newInstance())
                     .addToBackStack(null)
                     .commit()
             }
             R.id.btn_view_parked_slots -> {
                 // Open Parking Slots List screen
                 fragmentManager!!.beginTransaction()
-                    .replace(R.id.container, VehicleParkingListFragment.newInstance())
+                    .add(R.id.container, VehicleParkingListFragment.newInstance())
                     .addToBackStack(null)
                     .commit()
             }
