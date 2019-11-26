@@ -12,6 +12,9 @@ interface VehicleDao {
     @Query("SELECT * FROM Vehicle WHERE vehicleNumber = :number")
     fun getParkedVehicleWithNumber(number: Int): Vehicle?
 
+    @Query("SELECT * FROM Vehicle")
+    fun getAllParkedVehicles(): List<Vehicle>
+
     @Insert(onConflict = OnConflictStrategy.ABORT)
     fun addVehicle(vehicle: Vehicle)
 
