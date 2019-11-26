@@ -50,9 +50,6 @@ class ParkingAlgorithm {
         largeCarParkingSpots.addAll(1..2)
     }
 
-    @Inject
-    var mAppDatabase: VehicleDatabase? = null
-
     @Throws(
         Surface.OutOfResourcesException::class,
         VehicleAlreadyParkedException::class,

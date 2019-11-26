@@ -16,7 +16,7 @@ public class VehicleParkingListViewModel: ViewModel() {
 
         val list = mutableListOf<Section>()
         for (index in types.indices) {
-            list.add(Section(types[index].name, vehicles[index].map { a -> "VehicleTYpe: ${a.vehicleType.name} Parked in ${a.assignedParkingSpaceNumber}" }.toMutableList()))
+            list.add(Section("${types[index].name} PARKING", vehicles[index].sortedBy { a -> a.assignedParkingSpaceNumber }.map { a -> "${a.vehicleType.name} No: ${a.vehicleNumber} \nParked in ${a.assignedParkingSpaceNumber}" }.toMutableList()))
         }
         return list
     }

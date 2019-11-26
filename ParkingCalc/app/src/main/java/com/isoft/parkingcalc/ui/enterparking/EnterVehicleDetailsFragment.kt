@@ -53,6 +53,7 @@ class EnterVehicleDetailsFragment: Fragment() {
             } catch (e: Exception) {
                 showAlertDialog(e.message!!)
             }
+            et_vehicle_reg_no.setText("")
         }
     }
 }
