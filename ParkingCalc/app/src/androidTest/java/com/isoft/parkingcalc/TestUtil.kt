@@ -6,7 +6,7 @@ import java.util.*
 
 object TestUtil {
 
-    fun addMotorCycleInMotorCycleParking() = Vehicle (
+    fun createDummyVehicle() = Vehicle (
 //        vehicleNumber = number,
 //        parkingType = vehicleType,
 //        vehicleType = vehicleType,

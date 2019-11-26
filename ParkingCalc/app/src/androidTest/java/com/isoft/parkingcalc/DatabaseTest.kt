@@ -39,7 +39,7 @@ class DatabaseTest {
     @Test
     @Throws(Exception::class)
     fun testInsertVehicle() {
-        val vehicle: Vehicle = TestUtil.addMotorCycleInMotorCycleParking().apply {
+        val vehicle: Vehicle = TestUtil.createDummyVehicle().apply {
             vehicleNumber = 2364
             parkingType = VehicleType.MotorCycle
             vehicleType = VehicleType.MotorCycle
