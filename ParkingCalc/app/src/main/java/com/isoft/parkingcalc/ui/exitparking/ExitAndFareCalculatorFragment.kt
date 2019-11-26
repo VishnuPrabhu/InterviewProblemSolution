@@ -24,6 +24,7 @@ class ExitAndFareCalculatorFragment: Fragment() {
         viewModel.departingVehicle.observe(this, Observer {
             // show dialog and move to previous page
             print(it)
+            fragmentManager?.popBackStack()
         })
     }
 

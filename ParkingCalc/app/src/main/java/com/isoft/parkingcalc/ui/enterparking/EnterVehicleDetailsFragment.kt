@@ -34,7 +34,8 @@ class EnterVehicleDetailsFragment: Fragment() {
         // observer which updates the UI.
         viewModel.newVehicleForParking.observe(this, Observer {
             // Show dialog and go to previous page
-            print(it.vehicleNumber)
+            print(it)
+            fragmentManager?.popBackStack()
         })
     }
 

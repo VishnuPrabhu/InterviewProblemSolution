@@ -10,9 +10,9 @@ import java.util.*
 class EnterVehicleDetailsViewModel : ViewModel() {
 
 
-    // Create a LiveData with a String
-    val newVehicleForParking: MutableLiveData<Vehicle> by lazy {
-        MutableLiveData<Vehicle>()
+    // Create a LiveData for VehicleNumber
+    val newVehicleForParking: MutableLiveData<Int> by lazy {
+        MutableLiveData<Int>()
     }
 
 
@@ -50,7 +50,7 @@ class EnterVehicleDetailsViewModel : ViewModel() {
                 else -> vehicle.vehicleType = VehicleType.MotorCycle
             }
 
-            newVehicleForParking.value!!.vehicleNumber = vehicleNo
+            newVehicleForParking.value = vehicleNo
         }
         catch (e: Exception) {
             throw e

@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.isoft.parkingcalc.R
 import com.isoft.parkingcalc.ui.enterparking.EnterVehicleDetailsFragment
+import com.isoft.parkingcalc.ui.exitparking.ExitAndFareCalculatorFragment
 import kotlinx.android.synthetic.main.main_fragment.*
 
 class MainFragment : Fragment(), View.OnClickListener {
@@ -18,9 +19,6 @@ class MainFragment : Fragment(), View.OnClickListener {
 
     private lateinit var viewModel: MainViewModel
 
-    //region ViewObjects
-
-    //endregion
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,10 +47,15 @@ class MainFragment : Fragment(), View.OnClickListener {
                 // Open Entering screen
                 fragmentManager!!.beginTransaction()
                     .replace(R.id.container, EnterVehicleDetailsFragment.newInstance())
+                    .addToBackStack(null)
                     .commitNow()
             }
             R.id.btn_exit_parking -> {
                 // Open Exiting screen
+                fragmentManager!!.beginTransaction()
+                    .replace(R.id.container, ExitAndFareCalculatorFragment.newInstance())
+                    .addToBackStack(null)
+                    .commitNow()
             }
             R.id.btn_view_parked_slots -> {
                 // Open Parking Slots List screen
