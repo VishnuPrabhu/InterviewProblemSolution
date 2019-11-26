@@ -100,7 +100,7 @@ class ParkingAlgorithm {
 
         val hasFreeSpots: Boolean
 
-        if (vehicle.parkingType == VehicleType.MotorCycle) {
+        if (vehicle.vehicleType == VehicleType.MotorCycle) {
             hasFreeSpots =
                 (smallCarParkingSpots.count() - occupiedSmallCarSpots.map { a -> roundTo2Decimals(a.allotedSpaceForParking) }.sum()) >= SpaceRequiredForMotorCycleInSmallCarParkingSpot
         } else {
@@ -110,7 +110,7 @@ class ParkingAlgorithm {
 
         if (hasFreeSpots) {
             // Check if you have any remaining available space in Small Car Spaces which has a bike sparked in it. allocated space range is 0.5
-            if (vehicle.parkingType == VehicleType.MotorCycle) {
+            if (vehicle.vehicleType == VehicleType.MotorCycle) {
                 vehicle.allotedSpaceForParking = SpaceRequiredForMotorCycleInSmallCarParkingSpot
 
                 var nextPartialOccupiedSpaceOfMotorCycleInSmallCarParking = 0
@@ -175,7 +175,7 @@ class ParkingAlgorithm {
 
         val hasFreeSpots: Boolean
 
-        if (vehicle.parkingType == VehicleType.MotorCycle) {
+        if (vehicle.vehicleType == VehicleType.MotorCycle) {
             hasFreeSpots = (mediumCarParkingSpots.count() - occupiedMediumCarSpots.map { a ->
                 roundTo2Decimals(a.allotedSpaceForParking)
             }.sum()) >= SpaceRequiredForMotorCycleInMediumCarParking
@@ -187,7 +187,7 @@ class ParkingAlgorithm {
 
         if (hasFreeSpots) {
             // Check if you have any remaining available space in Medium Car Spaces which has a bike sparked in it. allocated space range is 0.3, 0.6
-            if (vehicle.parkingType == VehicleType.MotorCycle) {
+            if (vehicle.vehicleType == VehicleType.MotorCycle) {
                 vehicle.allotedSpaceForParking = SpaceRequiredForMotorCycleInMediumCarParking
 
                 var nextPartialOccupiedSpaceOfMotorCycleInMediumCarParking = 0
@@ -252,7 +252,7 @@ class ParkingAlgorithm {
 
         val hasFreeSpots: Boolean
 
-        if (vehicle.parkingType == VehicleType.MotorCycle) {
+        if (vehicle.vehicleType == VehicleType.MotorCycle) {
             hasFreeSpots =
                 (largeCarParkingSpots.count() - occupiedLargeCarSpots.map { a -> roundTo2Decimals(a.allotedSpaceForParking) }.sum()) >= SpaceRequiredForMotorCycleInLargeCarParkingSpot
         } else {
@@ -262,7 +262,7 @@ class ParkingAlgorithm {
 
         if (hasFreeSpots) {
             // Check if you have any remaining available space in Medium Car Spaces which has a bike sparked in it. allocated space range is 0.3, 0.6
-            if (vehicle.parkingType == VehicleType.MotorCycle) {
+            if (vehicle.vehicleType == VehicleType.MotorCycle) {
                 vehicle.allotedSpaceForParking = SpaceRequiredForMotorCycleInLargeCarParkingSpot
 
                 var nextPartialOccupiedSpaceOfMotorCycleInLargeCarParking = 0
